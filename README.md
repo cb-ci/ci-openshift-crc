@@ -32,7 +32,9 @@ crc config set cpus 8
 #this works, but your will have limited resources, controller resources need to be reduced, see below
 crc config set memory 16000 
 #to be tested, but if possible use this. might require more than 32 GB on your machine
-#crc config set memory 20000 
+#crc config set memory 20000
+crc config set disk-size 60
+crc config get disk-size
 crc config  get cpus
 crc config  get memory
 ```
