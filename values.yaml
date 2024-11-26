@@ -11,6 +11,7 @@ OperationsCenter:
   # platform specific values are: `eks`, `aws`, `gke`, `aks`, `openshift4`
   Platform: openshift4
   # OperationsCenter.HostName -- The hostname used to access Operations Center through the ingress controller.
+  #HostName: cjoc.yourcompany.com
   HostName: ci.apps-crc.testing
   License:
     Evaluation:
@@ -24,9 +25,9 @@ OperationsCenter:
       # OperationsCenter.License.Evaluation.LastName -- last name of evaluating user
       LastName: admin
       # OperationsCenter.License.Evaluation.Email -- email address of evaluating user
-      Email: acaternberg@cloudbees.com
+      Email: usere@example.com
       # OperationsCenter.License.Evaluation.Company -- company or organization of evaluating user
-      Company: cloudbees.com
+      Company: example.com
   # OperationsCenter.Name -- the name in the URL under which Operations Center will be accessible in the given host.
   # For instance, if Subdomain is true, the URL to access Operations Center will be {{OperationsCenter.Protocol}}://{{OperationsCenter.Name}}.{{OperationsCenter.HostName}}:{{OperationsCenter.Port}}
   # If Subdomain is false, the URL to access Operations Center will be {{OperationsCenter.Protocol}}://{{OperationsCenter.HostName}}:{{OperationsCenter.Port}}/{{OperationsCenter.Name}}
