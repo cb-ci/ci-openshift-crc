@@ -70,3 +70,7 @@ Because of limited resources, we need to limit the controller cpu and memory to 
 
 OC manages its own user id range, so security context with user id 1000 will not work
 see [Jenkinsfile.groovy](Jenkinsfile.groovy)
+
+# Troubleshooting
+
+https://github.com/okd-project/okd/discussions/716
