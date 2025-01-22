@@ -51,6 +51,16 @@ Persistence:
   #
   # StorageClass: "-"
   StorageClass: crc-csi-hostpath-provisioner
+## Install Default RBAC roles and bindings
+rbac:
+  # rbac.install -- Install `role`/`rolebindings`/`serviceAccount`.
+  # If false (and rbac is enabled in the cluster anyway), provide valid names for all service accounts.
+  install: true
+  # rbac.installCluster -- Install `clusterrole`/`clusterrolebinding`
+  # These cluster roles are optional but prevent usage of some features, so we recommend setting them up.
+  # Defaults to true, except on Openshift where it defaults to false
+  # Please refer to templates/cjoc-clusterrole-master-management.yaml in the chart
+  installCluster: true
 Common:
   image:
     # Common.image.tag -- container image tag
