@@ -64,4 +64,6 @@ rbac:
 Common:
   image:
     # Common.image.tag -- container image tag
-    tag: '2.462.3.3'
+    #tag: '2.462.3.3'
+    # Don't use "latest" in production
+    tag: 'latest'
