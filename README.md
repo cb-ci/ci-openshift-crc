@@ -9,6 +9,7 @@ This has been tested on MacOs 14.7.1 M1
 * https://www.redhat.com/en/blog/codeready-containers
 * https://crc.dev/crc/getting_started/getting_started/introducing/
 * https://www.redhat.com/en/resources/openshift-skill-paths-datasheet 
+* https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/troubleshooting-guides/troubleshooting-cloudbees-core-on-modern-platforms-operations-center-is-not-accessible
 
 # Pre requirements
 
@@ -62,6 +63,7 @@ Because of limited resources, we need to limit the controller cpu and memory to 
 * Create a new Controller on Cjoc
 * Open  CJOC -> Controller provisioning page 
 * Minimize CPU and Memory
+* disksize: 5 GB
 * CPU: 0.5
 * Memory: 2048 
 * Start the Controller
@@ -73,4 +75,47 @@ see [Jenkinsfile.groovy](Jenkinsfile.groovy)
 
 # Troubleshooting
 
+## Pull-Secret
+
+https://github.com/crc-org/crc/issues/4218
 https://github.com/okd-project/okd/discussions/716
+
+## Try re-provisioning  
+
+## Test cjoc from controller pod:
+
+curl -Il http://cjoc.cb-ci.svc.cluster.local/whoAmI/api/json?tree=authenticated
+
+## Get OC logs connection logs from Controller
+
+oc  exec -ti  c2-0 -- cat /var/jenkins_home/logs/operations-center-connector.log
+
+## Test from Controller script Console
+
+```
+def url = new URL("http://cjoc.cb-ci.svc.cluster.local/whoAmI/api/json?tree=authenticated");
+def connection = url.openConnection();
+println("Response Headers");
+println("================");
+for (def e in connection.getHeaderFields()) {
+  println("${e.key}: ${e.value}");
+}
+println("\nResponse status: HTTP/${connection.responseCode}\n");
+```
+
+Started the OpenShift cluster.
+
+The server is accessible via web console at:
+https://console-openshift-console.apps-crc.testing
+
+Log in as administrator:
+Username: kubeadmin
+Password: LiK4v-ubC5C-TNCze-w3AQJ
+
+Log in as user:
+Username: developer
+Password: developer
+
+Use the 'oc' command line interface:
+$ eval $(crc oc-env)
+$ oc login -u developer https://api.crc.testing:6443
