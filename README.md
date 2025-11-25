@@ -152,9 +152,8 @@ println("\nResponse status: HTTP/${connection.responseCode}\n");
 
 ## Useful Links
 
-- [CloudBees Support Shinobi Tools Discussion](https://github.com/cloudbees/support-shinobi-tools/discussions/2075)
 - [Blog: Install Red Hat OpenShift Local on Mac M1](https://blogbypuneeth.medium.com/install-redhat-openshift-local-on-mac-m1-c44bf4639692)
-- [CodeReady Containers Blog](https.www.redhat.com/en/blog/codeready-containers)
+- [CodeReady Containers Blog](https://www.redhat.com/en/blog/codeready-containers)
 - [CRC Getting Started Guide](https://crc.dev/crc/getting_started/getting_started/introducing/)
 - [OpenShift Skill Paths](https://www.redhat.com/en/resources/openshift-skill-paths-datasheet)
 - [Troubleshooting CloudBees CI on Modern Platforms](https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/troubleshooting-guides/troubleshooting-cloudbees-core-on-modern-platforms-operations-center-is-not-accessible)
