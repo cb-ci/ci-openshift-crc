@@ -61,6 +61,14 @@ rbac:
   # Defaults to true, except on Openshift where it defaults to false
   # Please refer to templates/cjoc-clusterrole-master-management.yaml in the chart
   installCluster: true
+
+Agents:
+  # Agents.Enabled -- Enable to create agent resources (service account, role)
+  Enabled: true # set to true if you want to use Pod Agents
+  # Isolates build agents in a separate namespace for security
+  SeparateNamespace:
+    Enabled: true
+    Create: true
 Common:
   image:
     # Common.image.tag -- container image tag
