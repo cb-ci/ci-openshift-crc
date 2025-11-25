@@ -1,98 +1,145 @@
-# About
+# CloudBees CI on OpenShift CRC
 
-Here are some brief instructions on how to install cloudBees Ci on OpenShift CRC local
-This has been tested on MacOs 14.7.1 M1
+This guide provides instructions on how to install CloudBees CI on a local OpenShift CRC cluster.
 
-# Links
-* https://github.com/cloudbees/support-shinobi-tools/discussions/2075
-* https://blogbypuneeth.medium.com/install-redhat-openshift-local-on-mac-m1-c44bf4639692
-* https://www.redhat.com/en/blog/codeready-containers
-* https://crc.dev/crc/getting_started/getting_started/introducing/
-* https://www.redhat.com/en/resources/openshift-skill-paths-datasheet 
-* https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/troubleshooting-guides/troubleshooting-cloudbees-core-on-modern-platforms-operations-center-is-not-accessible
+This setup has been tested on macOS 14.7.1 (M1).
 
-# Pre requirements
+## Table of Contents
 
-* A RedHat (free) personal account: register [here](https://www.redhat.com/wapps/ugc/register.html?_flowId=register-flow&_flowExecutionKey=e1s1). 
-* A machine with 32Go of memory is very highly recommended.
-* At least 40Go of free storage
-* Nothing listening on port 443. This is especially a problem if you deploy CBCI in kind (eg with shinobi). Delete the kind cluster(s) you have if necessary (kind delete cluster --name <>, list them with kind get clusters).
-helm
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Troubleshooting](#troubleshooting)
+- [Useful Links](#useful-links)
 
-# Install CRC
+## Prerequisites
 
-* https://blogbypuneeth.medium.com/install-redhat-openshift-local-on-mac-m1-c44bf4639692
-* https://crc.dev/crc/getting_started/getting_started/installing/ 
+Before you begin, ensure you have the following:
 
-# Pre configure
+- **Red Hat Account**: A free personal account is required. You can register [here](https://www.redhat.com/wapps/ugc/register.html).
+- **Hardware**:
+    - A machine with at least 32GB of RAM is highly recommended.
+    - At least 40GB of free storage.
+- **Software**:
+    - **CRC**: The CodeReady Containers tool.
+    - **Helm**: The Kubernetes package manager.
+    - **oc**: The OpenShift command-line client.
+- **Network**:
+    - Nothing listening on port 443. This can be an issue if you are also running Docker Desktop with a local Kubernetes cluster.
+- **Pull Secret**:
+    - A pull secret from your Red Hat account is required to pull the necessary container images. Download it from [here](https://console.redhat.com/openshift/install/crc/user-provisioned) and save it as `pullsecret.txt` in this directory.
 
-## adjust memory and cpu 
+## Installation
 
-```
-crc config set cpus 8
-#this works, but your will have limited resources, controller resources need to be reduced, see below
-crc config set memory 16000 
-#to be tested, but if possible use this. might require more than 32 GB on your machine
-#crc config set memory 20000 
-crc config  get cpus
-crc config  get memory
-```
+1.  **Install CRC**:
+    - Follow the official instructions to install CRC for your operating system: [Getting Started with Red Hat OpenShift Local](https://crc.dev/crc/getting_started/getting_started/installing/).
+    - An alternative guide can be found [here](https://blogbypuneeth.medium.com/install-redhat-openshift-local-on-mac-m1-c44bf4639692).
 
+2.  **Configure CRC**:
+    - Adjust the CPU and memory allocation for the CRC virtual machine. While 16GB of memory will work, you may experience resource constraints. If your machine has more than 32GB of RAM, consider allocating more memory to CRC.
 
-# stop and restart to apply the changes 
+    ```bash
+    crc config set cpus 8
+    crc config set memory 16000 # 16GB, recommended minimum
+    # crc config set memory 20000 # 20GB, if you have enough RAM
+    crc config get cpus
+    crc config get memory
+    ```
 
-When cpu and memory has been updated, you need to restart crc
+3.  **Start CRC**:
+    - After configuring CRC, you need to set up the cluster. This will use the `pullsecret.txt` file in the current directory.
 
-```
-crc stop
-crc start
-```
+    ```bash
+    crc setup
+    ```
 
+    - Then, start the CRC cluster:
 
-#  install CB CI 
+    ```bash
+    crc start
+    ```
 
-```
-#create new oc project (namespace)
-oc new-project cjoc && oc project cjoc
-#install CloudBees CI 
-./installHelm.sh
-```
+    - Once the cluster is running, you will see output with credentials for `kubeadmin` and `developer` users, and the URL for the OpenShift web console.
 
-# create Controller
-Because of limited resources, we need to limit the controller cpu and memory to a minimum 
-* Create a new Controller on Cjoc
-* Open  CJOC -> Controller provisioning page 
-* Minimize CPU and Memory
-* disksize: 5 GB
-* CPU: 0.5
-* Memory: 2048 
-* Start the Controller
+    ```
+    The server is accessible via web console at:
+    https://console-openshift-console.apps-crc.testing
 
-# Test Pipeline
+    Log in as administrator:
+    Username: kubeadmin
+    Password: <password>
 
-OC manages its own user id range, so security context with user id 1000 will not work
-see [Jenkinsfile.groovy](Jenkinsfile.groovy)
+    Log in as user:
+    Username: developer
+    Password: developer
 
-# Troubleshooting
+    Use the 'oc' command line interface:
+    $ eval $(crc oc-env)
+    $ oc login -u developer https://api.crc.testing:6443
+    ```
 
-## Pull-Secret
+4.  **Install CloudBees CI**:
+    - Create a new project (namespace) for the CloudBees CI Operations Center (CJOC).
 
-https://github.com/crc-org/crc/issues/4218
-https://github.com/okd-project/okd/discussions/716
+    ```bash
+    oc new-project cjoc && oc project cjoc
+    ```
 
-## Try re-provisioning  
+    - Run the `installHelm.sh` script to deploy CloudBees CI using Helm.
 
-## Test cjoc from controller pod:
+    ```bash
+    ./installHelm.sh
+    ```
 
+## Configuration
+
+### Create a Controller
+
+Due to the limited resources of a local CRC environment, you need to create a managed controller with reduced resource allocations.
+
+1.  Open the CloudBees CI Operations Center (CJOC) dashboard.
+2.  Navigate to the **Controller Provisioning** page.
+3.  Create a new controller with the following settings:
+    - **Disk Size**: 5 GB
+    - **CPU**: 0.5
+    - **Memory**: 2048 MB
+4.  Start the controller.
+
+## Usage
+
+### Test Pipeline
+
+The example `Jenkinsfile.groovy` in this repository is configured to work with the security context constraints of OpenShift, which manages its own user ID range.
+
+## Troubleshooting
+
+### Pull Secret Issues
+
+If you encounter issues with pulling container images, it may be related to your pull secret.
+
+- [crc issue #4218](https://github.com/crc-org/crc/issues/4218)
+- [OKD discussion #716](https://github.com/okd-project/okd/discussions/716)
+
+### Test CJOC from Controller Pod
+
+You can test the connection from a controller pod back to the CJOC.
+
+```bash
 curl -Il http://cjoc.cb-ci.svc.cluster.local/whoAmI/api/json?tree=authenticated
-
-## Get OC logs connection logs from Controller
-
-oc  exec -ti  c2-0 -- cat /var/jenkins_home/logs/operations-center-connector.log
-
-## Test from Controller script Console
-
 ```
+
+### Get OC Connection Logs from Controller
+
+```bash
+oc exec -ti <controller-pod-name> -- cat /var/jenkins_home/logs/operations-center-connector.log
+```
+
+### Test from Controller Script Console
+
+You can also run a test from the script console of a managed controller.
+
+```groovy
 def url = new URL("http://cjoc.cb-ci.svc.cluster.local/whoAmI/api/json?tree=authenticated");
 def connection = url.openConnection();
 println("Response Headers");
@@ -103,19 +150,11 @@ for (def e in connection.getHeaderFields()) {
 println("\nResponse status: HTTP/${connection.responseCode}\n");
 ```
 
-Started the OpenShift cluster.
+## Useful Links
 
-The server is accessible via web console at:
-https://console-openshift-console.apps-crc.testing
-
-Log in as administrator:
-Username: kubeadmin
-Password: LiK4v-ubC5C-TNCze-w3AQJ
-
-Log in as user:
-Username: developer
-Password: developer
-
-Use the 'oc' command line interface:
-$ eval $(crc oc-env)
-$ oc login -u developer https://api.crc.testing:6443
+- [CloudBees Support Shinobi Tools Discussion](https://github.com/cloudbees/support-shinobi-tools/discussions/2075)
+- [Blog: Install Red Hat OpenShift Local on Mac M1](https://blogbypuneeth.medium.com/install-redhat-openshift-local-on-mac-m1-c44bf4639692)
+- [CodeReady Containers Blog](https.www.redhat.com/en/blog/codeready-containers)
+- [CRC Getting Started Guide](https://crc.dev/crc/getting_started/getting_started/introducing/)
+- [OpenShift Skill Paths](https://www.redhat.com/en/resources/openshift-skill-paths-datasheet)
+- [Troubleshooting CloudBees CI on Modern Platforms](https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/troubleshooting-guides/troubleshooting-cloudbees-core-on-modern-platforms-operations-center-is-not-accessible)
