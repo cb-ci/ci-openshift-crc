@@ -1,6 +1,7 @@
 # CloudBees CI on OpenShift CRC
 
 This guide provides instructions on how to install CloudBees CI on a local OpenShift CRC cluster.
+See also https://docs.cloudbees.com/docs/cloudbees-ci/latest/openshift-install-guide/ 
 
 This setup has been tested on macOS 14.7.1 (M1).
 
