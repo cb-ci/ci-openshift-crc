@@ -44,16 +44,18 @@ spec:
       targetPort: 80
   type: ClusterIP
 ---
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: test-route
-spec:
-  to:
-    kind: Service
-    name: test-service
-  port:
-    targetPort: 80
-  tls:
-    termination: edge
-  wildcardPolicy: None
+#apiVersion: route.openshift.io/v1
+#kind: Route
+#metadata:
+#  name: test-route
+#spec:
+#  host: my-app.apps-crc.testing  # <-- Add your desired hostname here
+#  to:
+#    kind: Service
+#    name: test-service
+#  port:
+#    targetPort: 80
+#  tls:
+#    termination: edge
+#    insecureEdgeTerminationPolicy: Redirect # Forces HTTP -> HTTPS
+#  wildcardPolicy: None
