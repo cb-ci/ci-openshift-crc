@@ -36,6 +36,12 @@ Before you begin, ensure you have the following:
 1.  **Install CRC**:
     - Follow the official instructions to install CRC for your operating system: [Getting Started with Red Hat OpenShift Local](https://crc.dev/crc/getting_started/getting_started/installing/).
     - An alternative guide can be found [here](https://blogbypuneeth.medium.com/install-redhat-openshift-local-on-mac-m1-c44bf4639692).
+    - I used asdf:
+        ```
+         asdf plugin add oc https://github.com/asdf-community/asdf-oc.git
+         asdf install oc latest       
+         asdf local oc latest
+        ```
 
 2.  **Configure CRC**:
     - Adjust the CPU and memory allocation for the CRC virtual machine. While 16GB of memory will work, you may experience resource constraints. If your machine has more than 32GB of RAM, consider allocating more memory to CRC.
@@ -60,7 +66,7 @@ Before you begin, ensure you have the following:
     ```bash
     crc start
     ```
-
+    - See also [crc-start.sh](crc-start.sh)
     - Once the cluster is running, you will see output with credentials for `kubeadmin` and `developer` users, and the URL for the OpenShift web console.
 
     ```
