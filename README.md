@@ -84,7 +84,8 @@ Before you begin, ensure you have the following:
     - Create a new project (namespace) for the CloudBees CI Operations Center (CJOC).
 
     ```bash
-    oc new-project cjoc && oc project cjoc
+    PROJECT=cb-ci
+    oc new-project $PROJECT  && oc project $PROJECT
     ```
 
     - Run the `installHelm.sh` script to deploy CloudBees CI using Helm.
