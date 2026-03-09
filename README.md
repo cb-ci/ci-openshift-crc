@@ -160,7 +160,7 @@ for (def e in connection.getHeaderFields()) {
 println("\nResponse status: HTTP/${connection.responseCode}\n");
 ```
 
-### Controller Connection stcuk
+### Controller Connection stuck with anyuid
 
 OpenShift security settings prevent the pod from creating when the fsgroup is 1000. The anyuid permission has to be added to the controller service account.
 
