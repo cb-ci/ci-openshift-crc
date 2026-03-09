@@ -1,7 +1,7 @@
 # CloudBees CI on OpenShift CRC
 
 This guide provides instructions on how to install CloudBees CI on a local OpenShift CRC cluster.
-See also https://docs.cloudbees.com/docs/cloudbees-ci/latest/openshift-install-guide/ 
+See also <https://docs.cloudbees.com/docs/cloudbees-ci/latest/openshift-install-guide/>
 
 This setup has been tested on macOS 14.7.1 (M1).
 
@@ -20,30 +20,31 @@ Before you begin, ensure you have the following:
 
 - **Red Hat Account**: A free personal account is required. You can register [here](https://www.redhat.com/wapps/ugc/register.html).
 - **Hardware**:
-    - A machine with at least 32GB of RAM is highly recommended.
-    - At least 40GB of free storage.
+  - A machine with at least 32GB of RAM is highly recommended.
+  - At least 40GB of free storage.
 - **Software**:
-    - **CRC**: The CodeReady Containers tool.
-    - **Helm**: The Kubernetes package manager.
-    - **oc**: The OpenShift command-line client.
+  - **CRC**: The CodeReady Containers tool.
+  - **Helm**: The Kubernetes package manager.
+  - **oc**: The OpenShift command-line client.
 - **Network**:
-    - Nothing listening on port 443. This can be an issue if you are also running Docker Desktop with a local Kubernetes cluster.
+  - Nothing listening on port 443. This can be an issue if you are also running Docker Desktop with a local Kubernetes cluster.
 - **Pull Secret**:
-    - A pull secret from your Red Hat account is required to pull the necessary container images. Download it from [here](https://console.redhat.com/openshift/install/crc/user-provisioned) and save it as `pullsecret.txt` in this directory.
+  - A pull secret from your Red Hat account is required to pull the necessary container images. Download it from [here](https://console.redhat.com/openshift/install/crc/user-provisioned) and save it as `pullsecret.txt` in this directory.
 
 ## Installation
 
-1.  **Install CRC**:
+1. **Install CRC**:
     - Follow the official instructions to install CRC for your operating system: [Getting Started with Red Hat OpenShift Local](https://crc.dev/crc/getting_started/getting_started/installing/).
     - An alternative guide can be found [here](https://blogbypuneeth.medium.com/install-redhat-openshift-local-on-mac-m1-c44bf4639692).
     - I used asdf:
+
         ```
          asdf plugin add oc https://github.com/asdf-community/asdf-oc.git
          asdf install oc latest       
          asdf local oc latest
         ```
 
-2.  **Configure CRC**:
+2. **Configure CRC**:
     - Adjust the CPU and memory allocation for the CRC virtual machine. While 16GB of memory will work, you may experience resource constraints. If your machine has more than 32GB of RAM, consider allocating more memory to CRC.
 
     ```bash
@@ -54,7 +55,7 @@ Before you begin, ensure you have the following:
     crc config get memory
     ```
 
-3.  **Start CRC**:
+3. **Start CRC**:
     - After configuring CRC, you need to set up the cluster. This will use the `pullsecret.txt` file in the current directory.
 
     ```bash
@@ -66,6 +67,7 @@ Before you begin, ensure you have the following:
     ```bash
     crc start
     ```
+
     - See also [crc-start.sh](crc-start.sh)
     - Once the cluster is running, you will see output with credentials for `kubeadmin` and `developer` users, and the URL for the OpenShift web console.
 
@@ -86,7 +88,7 @@ Before you begin, ensure you have the following:
     $ oc login -u developer https://api.crc.testing:6443
     ```
 
-4.  **Install CloudBees CI**:
+4. **Install CloudBees CI**:
     - Create a new project (namespace) for the CloudBees CI Operations Center (CJOC).
 
     ```bash
@@ -106,13 +108,13 @@ Before you begin, ensure you have the following:
 
 Due to the limited resources of a local CRC environment, you need to create a managed controller with reduced resource allocations.
 
-1.  Open the CloudBees CI Operations Center (CJOC) dashboard.
-2.  Navigate to the **Controller Provisioning** page.
-3.  Create a new controller with the following settings:
+1. Open the CloudBees CI Operations Center (CJOC) dashboard.
+2. Navigate to the **Controller Provisioning** page.
+3. Create a new controller with the following settings:
     - **Disk Size**: 5 GB
     - **CPU**: 0.5
     - **Memory**: 2048 MB
-4.  Start the controller.
+4. Start the controller.
 
 ## Usage
 
@@ -156,6 +158,28 @@ for (def e in connection.getHeaderFields()) {
   println("${e.key}: ${e.value}");
 }
 println("\nResponse status: HTTP/${connection.responseCode}\n");
+```
+
+### Controller Connection stcuk
+
+OpenShift security settings prevent the pod from creating when the fsgroup is 1000. The anyuid permission has to be added to the controller service account.
+
+One option is to grant this to each service account (controller) separately which can become difficult:
+
+```
+oc adm policy add-scc-to-user anyuid -z <controller-sa> -n YOURNAMMESPACE
+```
+
+Another option is to grant this permissions to all the service accounts in the namespace:
+
+```
+oc adm policy add-scc-to-group anyuid system:serviceaccounts:YOURNAMMESPACE
+```
+
+Issue seen when not adding anyuid to the controller service account:
+
+```bash
+Warning   FailedCreate            statefulset/controller                             create Pod controller-0 in StatefulSet controller failed error: pods "controller-0" is forbidden: unable to validate against any security context constraint: [provider "anyuid": Forbidden: not usable by user or serviceaccount, provider restricted-v2: .spec.securityContext.fsGroup: Invalid value: []int64{1000}: 1000 is not an allowed group, provider "restricted": Forbidden: not usable by user or serviceaccount, provider "nonroot-v2": Forbidden: not usable by user or serviceaccount, provider "nonroot": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid-v2": Forbidden: not usable by user or serviceaccount, provider "machine-api-termination-handler": Forbidden: not usable by user or serviceaccount, provider "hostnetwork-v2": Forbidden: not usable by user or serviceaccount, provider "hostnetwork": Forbidden: not usable by user or serviceaccount, provider "hostaccess": Forbidden: not usable by user or serviceaccount, provider "hostpath-provisioner": Forbidden: not usable by user or serviceaccount, provider "privileged": Forbidden: not usable by user or serviceaccount]
 ```
 
 ## Useful Links
