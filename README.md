@@ -33,15 +33,6 @@ Before you begin, ensure you have the following:
 
 ## Service Account Permissions
 
-# Installation
-
-We were required to install from lcoal chart like this:
-
-```
-helm upgrade -i cloudbees-core -f CloudBees-C-I-openshift-CRC/values.yml . -n cbj-dev-001.
-```
-
-## Service account
 
 On OpenShift, you need to give your “installer” ServiceAccount rights to create both namespace-scoped and cluster-scoped objects.  
 In practice, that means you must bind it to a ClusterRole that can:
