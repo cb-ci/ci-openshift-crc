@@ -31,6 +31,104 @@ Before you begin, ensure you have the following:
 - **Pull Secret**:
   - A pull secret from your Red Hat account is required to pull the necessary container images. Download it from [here](https://console.redhat.com/openshift/install/crc/user-provisioned) and save it as `pullsecret.txt` in this directory.
 
+## Service Account Permissions
+
+# Installation
+
+We were required to install from lcoal chart like this:
+
+```
+helm upgrade -i cloudbees-core -f CloudBees-C-I-openshift-CRC/values.yml . -n cbj-dev-001.
+```
+
+## Service account
+
+On OpenShift, you need to give your “installer” ServiceAccount rights to create both namespace-scoped and cluster-scoped objects.  
+In practice, that means you must bind it to a ClusterRole that can:
+
+• Create, update, patch, delete, get, list & watch all of the namespaced resources the chart uses:
+    – Namespaces, ServiceAccounts, Roles, RoleBindings
+    – Deployments, StatefulSets, Services, ConfigMaps, Secrets
+    – NetworkPolicies, PodDisruptionBudgets, Ingresses (networking.k8s.io/v1)
+    – Routes (route.openshift.io/v1) and (if you’ve enabled Gateway API) HTTPRoutes
+• Create, update, patch, delete, get, list & watch the cluster-scoped resources:
+    – ClusterRoles, ClusterRoleBindings
+    – CustomResourceDefinitions (apiextensions.k8s.io/v1) (only if you’ve enabled the CasC‐Bundle CRD)
+    – StorageClasses (only if you’ve enabled the GKE storage-class)
+
+The easiest thing is usually to just give it the built-in cluster-admin role:
+
+```bash
+oc adm policy add-cluster-role-to-user cluster-admin \
+    -z cbj-dev-001-sa -n cbj-dev-001
+```
+
+However, in some cases, full permission can not be assigned.
+Therefore, this minimal ClusterRole can be used instead of full cluster-admin.  
+It covers all of the API groups & resources the CloudBees Helm chart will attempt to create by default:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+    name: helm-chart-installer
+rules:
+# namespaced core
+- apiGroups: [""]
+    resources:
+    - namespaces
+    - serviceaccounts
+    - configmaps
+    - secrets
+    - services
+    - endpoints
+    verbs: ["*"]
+# namespaced apps
+- apiGroups: ["apps"]
+    resources: ["deployments","statefulsets"]
+    verbs: ["*"]
+# namespaced networking
+- apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies","ingresses"]
+    verbs: ["*"]
+# OpenShift Routes
+- apiGroups: ["route.openshift.io"]
+    resources: ["routes","routes/custom-host"]
+    verbs: ["*"]
+# Gateway API (if you enable it)
+- apiGroups: ["gateway.networking.k8s.io"]
+    resources: ["httproutes"]
+    verbs: ["*"]
+# PodDisruptionBudget
+- apiGroups: ["policy"]
+    resources: ["poddisruptionbudgets"]
+    verbs: ["*"]
+# RBAC
+- apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles","rolebindings","clusterroles","clusterrolebindings"]
+    verbs: ["*"]
+# CRDs (only if you enable the Casc-Bundle-Service)
+- apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["*"]
+# StorageClass (only on GKE–if you turn on the GKE storageClass template)
+- apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["*"]
+```
+
+Then bind it to your installer SA:
+
+```bash
+oc create clusterrolebinding install-charts-binding \
+    --clusterrole=helm-chart-installer \
+    --serviceaccount=<your-namespace>:<your-serviceaccount>
+```
+
+After that, the service account will be able to helm install (or oc apply -f templates/...) without “forbidden” errors.
+Note: The ClusterRole permissions can be made more restrictive
+
+
 ## Installation
 
 1. **Install CRC**:
