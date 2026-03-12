@@ -275,7 +275,24 @@ oc adm policy add-scc-to-group anyuid system:serviceaccounts: YOURNAMESPACE
 Issue seen when not adding anyuid to the controller service account:
 
 ```bash
-Warning:   FailedCreate            statefulset/controller                             create Pod controller-0 in StatefulSet controller failed error: pods "controller-0" is forbidden: unable to validate against any security context constraint: [provider "anyuid": Forbidden: not usable by user or serviceaccount, provider restricted-v2: .spec.securityContext.fsGroup: Invalid value: []int64{1000}: 1000 is not an allowed group, provider "restricted": Forbidden: not usable by user or serviceaccount, provider "nonroot-v2": Forbidden: not usable by user or serviceaccount, provider "nonroot": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid-v2": Forbidden: not usable by user or serviceaccount, provider "machine-api-termination-handler": Forbidden: not usable by user or serviceaccount, provider "hostnetwork-v2": Forbidden: not usable by user or serviceaccount, provider "hostnetwork": Forbidden: not usable by user or serviceaccount, provider "hostaccess": Forbidden: not usable by user or serviceaccount, provider "hostpath-provisioner": Forbidden: not usable by user or serviceaccount, provider "privileged": Forbidden: not usable by user or serviceaccount]
+Warning: FailedCreate  statefulset/controller  create Pod controller-0 in 
+StatefulSet controller failed error: pods "controller-0" is forbidden: 
+unable to validate against any security context constraint: 
+[provider "anyuid": Forbidden: not usable by user or serviceaccount, 
+provider restricted-v2: .spec.securityContext.fsGroup: Invalid value: 
+[]int64{1000}: 1000 is not an allowed group, 
+provider "restricted": Forbidden: not usable by user or serviceaccount, 
+provider "nonroot-v2": Forbidden: not usable by user or serviceaccount, 
+provider "nonroot": Forbidden: not usable by user or serviceaccount, 
+provider "hostmount-anyuid": Forbidden: not usable by user or serviceaccount, 
+provider "hostmount-anyuid-v2": Forbidden: not usable by user or serviceaccount, 
+provider "machine-api-termination-handler": Forbidden: not usable by user or 
+serviceaccount, provider "hostnetwork-v2": Forbidden: not usable by user or 
+serviceaccount, provider "hostnetwork": Forbidden: not usable by user or 
+serviceaccount, provider "hostaccess": Forbidden: not usable by user or 
+serviceaccount, provider "hostpath-provisioner": Forbidden: not usable by 
+user or serviceaccount, provider "privileged": Forbidden: not usable by 
+user or serviceaccount]
 ```
 
 ## Useful Links
