@@ -37,15 +37,15 @@ Before you begin, ensure you have the following:
 On OpenShift, you need to give your “installer” ServiceAccount rights to create both namespace-scoped and cluster-scoped objects.  
 In practice, that means you must bind it to a ClusterRole that can:
 
-• Create, update, patch, delete, get, list & watch all of the namespaced resources the chart uses:
-    – Namespaces, ServiceAccounts, Roles, RoleBindings
-    – Deployments, StatefulSets, Services, ConfigMaps, Secrets
-    – NetworkPolicies, PodDisruptionBudgets, Ingresses (networking.k8s.io/v1)
-    – Routes (route.openshift.io/v1) and (if you’ve enabled Gateway API) HTTPRoutes
-• Create, update, patch, delete, get, list & watch the cluster-scoped resources:
-    – ClusterRoles, ClusterRoleBindings
-    – CustomResourceDefinitions (apiextensions.k8s.io/v1) (only if you’ve enabled the CasC‐Bundle CRD)
-    – StorageClasses (only if you’ve enabled the GKE storage-class)
+- Create, update, patch, delete, get, list & watch all of the namespaced resources the chart uses:
+  – Namespaces, ServiceAccounts, Roles, RoleBindings
+  – Deployments, StatefulSets, Services, ConfigMaps, Secrets
+  – NetworkPolicies, PodDisruptionBudgets, Ingresses (networking.k8s.io/v1)
+  – Routes (route.openshift.io/v1) and (if you’ve enabled Gateway API) HTTPRoutes
+- Create, update, patch, delete, get, list & watch the cluster-scoped resources:
+   – ClusterRoles, ClusterRoleBindings
+   – CustomResourceDefinitions (apiextensions.k8s.io/v1) (only if you’ve enabled the CasC‐Bundle CRD)
+   – StorageClasses
 
 The easiest thing is usually to just give it the built-in cluster-admin role:
 
