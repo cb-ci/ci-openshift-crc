@@ -52,9 +52,15 @@ The easiest thing is usually to just give it the built-in cluster-admin role:
 oc adm policy add-cluster-role-to-user cluster-admin \
     -z <serviceaccount> -n <namespace>
 ```
+Command explained:
+* `oc adm policy`: The administrative sub-command for managing security policies.
+* `add-cluster-role-to-user`: Assigns a ClusterRole (permissions that apply to all namespaces) to a specific identity.
+* `cluster-admin`: The most powerful default role in OpenShift/Kubernetes. It grants "root" access to the cluster.
+* `-z <serviceaccount>`: The shorthand flag for a ServiceAccount. This tells OpenShift to format the user string correctly as system:serviceaccount:<namespace>:<serviceaccount>.
+* `-n <namespace>`: The namespace where that specific ServiceAccount lives.
 
 However, in some cases, full permission can not be assigned.
-Therefore, this minimal ClusterRole can be used instead of full cluster-admin.  
+Therefore, the minimal ClusterRole below can be used instead of full cluster-admin.  
 It covers all of the API groups & resources the CloudBees Helm chart will attempt to create by default:
 
 ```yaml
@@ -116,8 +122,6 @@ oc create clusterrolebinding install-charts-binding \
 ```
 
 After that, the service account will be able to helm install (or oc apply -f templates/...) without “forbidden” errors.
-Note: The ClusterRole permissions can be made more restrictive
-
 
 ## Installation
 
