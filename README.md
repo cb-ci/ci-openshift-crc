@@ -162,24 +162,28 @@ println("\nResponse status: HTTP/${connection.responseCode}\n");
 
 ### Controller Connection stuck with anyuid
 
-OpenShift security settings prevent the pod from creating when the fsgroup is 1000. The anyuid permission has to be added to the controller service account.
+OpenShift security settings prevent the pod from being created when the fsgroup is 1000. The anyuid permission has to be added to the controller service account.
+See
+- [OpenShift Managing Security Constraints](https://medium.com/@muhammadadel612/managing-security-context-constraints-scc-b48b3c566fa5)
+- [OpenShift Security Constraints Explained](https://andreaskaris.github.io/blog/openshift/scc/)
+- [OpenShift SCC ](https://examples.openshift.pub/deploy/scc-anyuid/)
 
-One option is to grant this to each service account (controller) separately which can become difficult:
+One option is to grant this to each service account (controller) separately, which can become difficult:
 
 ```
 oc adm policy add-scc-to-user anyuid -z <controller-sa> -n YOURNAMMESPACE
 ```
 
-Another option is to grant this permissions to all the service accounts in the namespace:
+Another option is to grant these permissions to all the service accounts in the namespace:
 
 ```
-oc adm policy add-scc-to-group anyuid system:serviceaccounts:YOURNAMMESPACE
+oc adm policy add-scc-to-group anyuid system:serviceaccounts: YOURNAMESPACE
 ```
 
 Issue seen when not adding anyuid to the controller service account:
 
 ```bash
-Warning   FailedCreate            statefulset/controller                             create Pod controller-0 in StatefulSet controller failed error: pods "controller-0" is forbidden: unable to validate against any security context constraint: [provider "anyuid": Forbidden: not usable by user or serviceaccount, provider restricted-v2: .spec.securityContext.fsGroup: Invalid value: []int64{1000}: 1000 is not an allowed group, provider "restricted": Forbidden: not usable by user or serviceaccount, provider "nonroot-v2": Forbidden: not usable by user or serviceaccount, provider "nonroot": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid-v2": Forbidden: not usable by user or serviceaccount, provider "machine-api-termination-handler": Forbidden: not usable by user or serviceaccount, provider "hostnetwork-v2": Forbidden: not usable by user or serviceaccount, provider "hostnetwork": Forbidden: not usable by user or serviceaccount, provider "hostaccess": Forbidden: not usable by user or serviceaccount, provider "hostpath-provisioner": Forbidden: not usable by user or serviceaccount, provider "privileged": Forbidden: not usable by user or serviceaccount]
+Warning:   FailedCreate            statefulset/controller                             create Pod controller-0 in StatefulSet controller failed error: pods "controller-0" is forbidden: unable to validate against any security context constraint: [provider "anyuid": Forbidden: not usable by user or serviceaccount, provider restricted-v2: .spec.securityContext.fsGroup: Invalid value: []int64{1000}: 1000 is not an allowed group, provider "restricted": Forbidden: not usable by user or serviceaccount, provider "nonroot-v2": Forbidden: not usable by user or serviceaccount, provider "nonroot": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid-v2": Forbidden: not usable by user or serviceaccount, provider "machine-api-termination-handler": Forbidden: not usable by user or serviceaccount, provider "hostnetwork-v2": Forbidden: not usable by user or serviceaccount, provider "hostnetwork": Forbidden: not usable by user or serviceaccount, provider "hostaccess": Forbidden: not usable by user or serviceaccount, provider "hostpath-provisioner": Forbidden: not usable by user or serviceaccount, provider "privileged": Forbidden: not usable by user or serviceaccount]
 ```
 
 ## Useful Links
@@ -188,4 +192,6 @@ Warning   FailedCreate            statefulset/controller                        
 - [CodeReady Containers Blog](https://www.redhat.com/en/blog/codeready-containers)
 - [CRC Getting Started Guide](https://crc.dev/crc/getting_started/getting_started/introducing/)
 - [OpenShift Skill Paths](https://www.redhat.com/en/resources/openshift-skill-paths-datasheet)
+- [OpenShift Managing Security Constraints](https://medium.com/@muhammadadel612/managing-security-context-constraints-scc-b48b3c566fa5)
+- [OpenShift Security Constraints Explained](https://andreaskaris.github.io/blog/openshift/scc/) and https://examples.openshift.pub/deploy/scc-anyuid/
 - [Troubleshooting CloudBees CI on Modern Platforms](https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/troubleshooting-guides/troubleshooting-cloudbees-core-on-modern-platforms-operations-center-is-not-accessible)
