@@ -56,7 +56,7 @@ Command explained:
 * `oc adm policy`: The administrative sub-command for managing security policies.
 * `add-cluster-role-to-user`: Assigns a ClusterRole (permissions that apply to all namespaces) to a specific identity.
 * `cluster-admin`: The most powerful default role in OpenShift/Kubernetes. It grants "root" access to the cluster.
-* `-z <serviceaccount>`: The shorthand flag for a ServiceAccount. This tells OpenShift to format the user string correctly as system:serviceaccount:<namespace>:<serviceaccount>.
+* `-z <serviceaccount>`: The shorthand flag for a ServiceAccount. This tells OpenShift to format the user string correctly as `system:serviceaccount:<namespace>:<serviceaccount>`.
 * `-n <namespace>`: The namespace where that specific ServiceAccount lives.
 
 However, in some cases, full permission can not be assigned.
