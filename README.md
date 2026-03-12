@@ -50,7 +50,7 @@ The easiest thing is usually to just give it the built-in cluster-admin role:
 
 ```bash
 oc adm policy add-cluster-role-to-user cluster-admin \
-    -z cbj-dev-001-sa -n cbj-dev-001
+    -z <serviceaccount> -n <namespace>
 ```
 
 However, in some cases, full permission can not be assigned.
